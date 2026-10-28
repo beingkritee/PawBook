@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>PawBook – Pet Care Appointment Portal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+  --ink:#16343a; --teal:#1f6f78; --teal-d:#154e55; --mint:#dff1ea; --sun:#f6c945;
+  --bg:#f3f7f5; --card:#ffffff; --line:#d3e2dc; --berry:#c2476b; --muted:#587076;
+}
+
+*{box-sizing:border-box;
+  margin:0;
+  padding:0
+}
+
+html{
+  scroll-behavior:smooth;
+  scroll-padding-top:76px
+}
+
+body{
+  font-family:'Nunito',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.6
+}
+
+h1,h2,h3{
+  font-family:'Fredoka','Nunito',sans-serif;
+  font-weight:600;
+  line-height:1.2
+}
+
+a{
+  color:inherit
+}
+
+:focus-visible{
+  outline:3px solid var(--sun);
+  outline-offset:2px
+}
+
+.wrap{
+  max-width:1040px;
+  margin:0 auto;
+  padding:0 20px
+}
+
+section{
+  padding:56px 
+}
+section>.wrap>h2{
+  font-size:2rem;
+  margin-bottom:6px
+}
+
+.sub{
+  color:var(--muted);
+  margin-bottom:24px;
+  max-width:60ch
+}
+
+/* Nav */
+
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:var(--teal-d);
+  color:#fff
+}
+
+header .wrap{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  height:60px
+}
+
+.logo{
+  font-family:'Fredoka',sans-serif;
+  font-size:1.4rem;
+  text-decoration:none
+}
+
+nav{
+  display:flex;
+  gap:4px;
+  overflow-x:auto
+}
+
+nav a{
+  color:#fff;
+  text-decoration:none;
+  padding:6px 12px;
+  border-radius:99px;
+  font-weight:600;
+  white-space:nowrap;
+  transition:background .2s
+}
+
+nav a:hover{
+  background:rgba(255,255,255,.18)
+}
+
+/* Hero */
+.hero{
+  background:var(--teal);
+  color:#fff;
+  padding:64px 0 72px
+}
+
+.hero .wrap{
+  display:grid;
+  grid-template-columns:1.2fr 1fr;
+  gap:32px;
+  align-items:center
+}
+
+.hero h1{
+  font-size:clamp(2.2rem,5vw,3.4rem);
+  margin-bottom:14px
+}
+
+.hero p{
+  font-size:1.1rem;
+  max-width:46ch;
+  margin-bottom:24px;
+  color:#e6f4ef
+}
+
+.btn{
+  display:inline-block;
+  background:var(--sun);
+  color:var(--ink);
+  font:700 1rem 'Nunito',sans-serif;
+  padding:12px 24px;
+  border-radius:12px;
+  border:0;
+  text-decoration:none;
+  cursor:pointer;
+  transition:transform .15s,box-shadow .15s
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 0 rgba(0,0,0,.18)
+}
+
+.btn.ghost{
+  background:transparent;
+  color:#fff;
+  border:2px solid #fff;
+  margin-left:8px
+}
+
+.paws{
+  font-size:6rem;
+  text-align:center;
+  line-height:1.1;
+  background:var(--teal-d);
+  border-radius:28px;
+  padding:28px
+}
+
+.paws small{
+  display:block;
+  font:600 1rem 'Nunito',sans-serif;
+  margin-top:8px;
+  color:var(--mint)
+}
+
+/* Filter + cards */
+
+.filters input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none
+}
+
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:22px
+}
+
+.chips label,.pick label{
+  cursor:pointer;
+  padding:8px 18px;
+  border-radius:99px;
+  border:2px solid var(--line);
+  background:var(--card);
+  font-weight:700;
+  transition:all .15s
+}
+
+.chips label:hover,.pick label:hover{
+  border-color:var(--teal)
+}
+
+#f-all:checked~.chips [for=f-all],#f-vet:checked~.chips [for=f-vet],#f-groom:checked~.chips [for=f-groom],#f-train:checked~.chips [for=f-train],#f-board:checked~.chips [for=f-board]{background:var(--teal);color:#fff;border-color:var(--teal)}
+#f-vet:checked~.grid .card:not(.vet),#f-groom:checked~.grid .card:not(.groom),#f-train:checked~.grid .card:not(.train),#f-board:checked~.grid .card:not(.board){display:none}
+.filters input:focus-visible~.chips label{outline-offset:2px}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:18px
+}
+
+.card{
+  background:var(--card);
+  border:2px solid var(--line);
+  border-radius:18px;
+  padding:20px
+}
+
+.card .ic{
+  font-size:2.2rem
+}
+
+.card h3{
+  margin:6px 0 4px;
+  font-size:1.2rem
+}
+
+.card p{
+  color:var(--muted);
+  font-size:.95rem
+}
+
+.price{
+  display:block;
+  margin-top:10px;
+  font-weight:700;
+  color:var(--teal-d)
+}
+
+/* Providers */
+
+.prov{display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:18px
+}
+
+.prov .card{
+  border-radius:18px
+}
+
+.who{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  margin-bottom:10px
+}
+
+.avatar{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  background:var(--mint);
+  display:grid;
+  place-items:center;
+  font-size:1.6rem;
+  flex:none
+}
+
+.tag{
+  display:inline-block;
+  background:var(--mint);
+  border-radius:8px;
+  padding:2px 10px;
+  font-size:.85rem;
+  font-weight:700;
+  margin:6px 6px 0 0
+}
+
+details{
+  margin-top:14px;
+  border-top:2px dashed var(--line);
+  padding-top:12px
+}
+
+
+summary{
+  cursor:pointer;
+  font-weight:700;
+  color:var(--teal)
+}
+
+details[open] summary{
+  margin-bottom:10px
+}
+
+.slots{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px
+}
+
+.slots span{
+  background:var(--mint);
+  padding:4px 12px;
+  border-radius:8px;
+  font-weight:600;
+  font-size:.9rem
+}
+
+.slots span.full{
+  background:#eee;
+  color:#999;
+  text-decoration:line-through
+}
+
+/* Booking */
+
+.book{
+  background:var(--mint)
+}
+
+form.box{
+  background:var(--card);
+  border-radius:22px;
+  padding:28px;
+  display:grid;
+  gap:20px;
+  border:2px solid var(--line)
+}
+
+fieldset{
+  border:0;
+  display:grid;
+  gap:10px
+}
+
+legend{
+  font-weight:700;
+  margin-bottom:8px;
+  font-size:1.05rem
+}
+
+.pick{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px
+}
+
+.pick input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none
+}
+
+.pick input:checked+label{
+  background:var(--teal);
+  color:#fff;
+  border-color:var(--teal)
+}
+
+.pick input:focus-visible+label{
+  outline:3px solid var(--sun);
+  outline-offset:2px
+}
+
+.row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px
+}
+
+label.f{
+  display:grid;
+  gap:6px;
+  font-weight:700
+}
+
+input[type=text],input[type=date],select,textarea{
+  font:inherit;
+  padding:10px 12px;
+  border:2px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  color:var(--ink)
+}
+
+input[type=text]:focus,input[type=date]:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:var(--teal);
+  box-shadow:0 0 0 3px var(--mint)
+}
+
+.check{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  font-weight:600
+}
+
+.check input{
+  width:20px;
+  height:20px;
+  accent-color:var(--teal)
+}
+
+/* Confirmation (uses :target) */
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:50;
+  background:rgba(22,52,58,.6);
+  place-items:center;
+  padding:20px
+}
+
+.modal:target{
+  display:grid
+}
+
+.modal div{
+  background:#fff;
+  border-radius:22px;
+  padding:32px;
+  max-width:420px;
+  text-align:center
+}
+
+
+.modal .big{
+  font-size:3rem
+}
+
+.modal h3{
+  font-size:1.5rem;
+  margin:6px 0
+}
+
+.modal p{
+  color:var(--muted);
+  margin-bottom:18px
+}
+
+/* Tabs (pets & dashboards) */
+
+.tabs>input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none
+}
+
+.tabbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:-2px;
+  position:relative;
+  z-index:1
+}
+
+.tabbar label{cursor:pointer;
+  padding:10px 20px;
+  border-radius:14px 14px 0 0;
+  background:#e4eeea;
+  font-weight:700;
+  border:2px solid var(--line);
+  border-bottom:0;
+  transition:background .15s
+}
+
+.tabbar label:hover{
+  background:#fff
+}
+
+.panel{
+  display:none;
+  background:var(--card);
+  border:2px solid var(--line);
+  border-radius:0 18px 18px 18px;
+  padding:24px
+}
+
+#t1:checked~.p1,#t2:checked~.p2,#t3:checked~.p3,#d1:checked~.p1,#d2:checked~.p2,#d3:checked~.p3{display:block}
+#t1:checked~.tabbar [for=t1],#t2:checked~.tabbar [for=t2],#t3:checked~.tabbar [for=t3],#d1:checked~.tabbar [for=d1],#d2:checked~.tabbar [for=d2],#d3:checked~.tabbar [for=d3]{background:#fff;border-color:var(--line)}
+.tabs>input:focus-visible~.tabbar label{outline:3px solid var(--sun)}
+
+.pet{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:20px;
+  align-items:center
+}
+
+.pet .face{
+  font-size:4.5rem;
+  background:var(--mint);
+  border-radius:24px;
+  padding:12px 18px
+}
+
+dl{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:4px 18px
+}
+
+dt{
+  font-weight:700;
+  color:var(--muted)
+}
+
+.empty{
+  border:2px dashed var(--line);
+  border-radius:14px;
+  padding:20px;
+  text-align:center;
+  color:var(--muted)
+}
+
+/* Reminders & history */
+
+.two{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px
+}
+
+.remind{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  padding:14px;
+  border-radius:14px;
+  background:var(--card);
+  border:2px solid var(--line);
+  margin-bottom:10px
+}
+
+.remind b{
+  display:block
+}
+
+.remind.soon{
+  border-color:var(--sun);
+  background:#fff9e3
+}
+
+
+.tbl{
+  overflow-x:auto;
+  background:var(--card);
+  border:2px solid var(--line);
+  border-radius:18px
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:460px
+}
+
+th,td{
+  text-align:left;
+  padding:12px 16px;
+  border-bottom:1px solid var(--line)
+}
+
+th{
+  background:var(--mint)
+}
+
+tr:last-child td{
+  border-bottom:0
+}
+
+tbody tr:hover{
+  background:#f7fbf9
+}
+
+.pill{
+  padding:2px 12px;
+  border-radius:99px;
+  font-size:.85rem;
+  font-weight:700;
+  background:var(--mint)
+}
+
+.pill.wait{
+  background:#fff1c2
+}
+
+.pill.no{
+  background:#fbd9e3
+}
+
+
+/* Dashboard stats */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:14px;
+  margin-bottom:18px
+}
+
+.stat{
+  background:var(--bg);
+  border-radius:14px;
+  padding:14px
+}
+
+.stat b{
+  font:600 1.8rem 'Fredoka',sans-serif;
+  display:block
+}
+
+.stat span{
+  color:var(--muted);
+  font-size:.9rem
+}
+
+.req{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 0;
+  border-bottom:1px solid var(--line)
+}
+
+.req:last-child{
+  border-bottom:0
+}
+
+.mini{
+  padding:6px 14px;
+  border-radius:8px;
+  border:2px solid var(--teal);
+  background:#fff;
+  font:700 .9rem 'Nunito',sans-serif;
+  cursor:pointer;
+  color:var(--teal-d)
+}
+
+.mini.ok{
+  background:var(--teal);
+  color:#fff
+}
+
+footer{
+  background:var(--teal-d);
+  color:#cfe6df;
+  text-align:center;
+  padding:28px 20px
+}
+
+@media (max-width:760px){
+  .hero .wrap,.two{grid-template-columns:1fr}
+  .paws{font-size:4rem}
+  .pet{grid-template-columns:1fr}
+  .btn.ghost{margin:10px 0 0}
+  nav a{padding:6px 9px;font-size:.9rem}
+  .logo{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="#top">🐾 PawBook</a>
+    <nav>
+      <a href="#services">Services</a>
+      <a href="#providers">Providers</a>
+      <a href="#book">Book</a>
+      <a href="#pets">My pets</a>
+      <a href="#history">History</a>
+      <a href="#dashboards">Dashboards</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- Hero -->
+
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Care for your pet, booked in a minute.</h1>
+      <p>Find trusted vets, groomers and trainers, see when they’re free, and get a reminder before every visit.</p>
+      <a class="btn" href="#book">Book an appointment</a>
+      <a class="btn ghost" href="#services">Browse services</a>
+    </div>
+    <div class="paws" aria-hidden="true">🐶🐱<small>Bruno has a check-up on Friday</small></div>
+  </div>
+</div>
+
+<!-- Services -->
+<section id="services">
+  <div class="wrap">
+    <h2>Find a service</h2>
+    <p class="sub">Pick a category to narrow the list.</p>
+    <div class="filters">
+      <input type="radio" name="f" id="f-all" checked>
+      <input type="radio" name="f" id="f-vet">
+      <input type="radio" name="f" id="f-groom">
+      <input type="radio" name="f" id="f-train">
+      <input type="radio" name="f" id="f-board">
+      <div class="chips">
+        <label for="f-all">All</label>
+        <label for="f-vet">Veterinary</label>
+        <label for="f-groom">Grooming</label>
+        <label for="f-train">Training</label>
+        <label for="f-board">Boarding</label>
+      </div>
+      <div class="grid">
+        <div class="card vet"><div class="ic">🩺</div><h3>Health check-up</h3><p>Full exam, weight check and vaccine review.</p><span class="price">From ₹500</span></div>
+        <div class="card vet"><div class="ic">💉</div><h3>Vaccination</h3><p>Core and seasonal vaccines with a digital record.</p><span class="price">From ₹700</span></div>
+        <div class="card groom"><div class="ic">🛁</div><h3>Bath and brush</h3><p>Wash, blow-dry, nail trim and ear cleaning.</p><span class="price">From ₹800</span></div>
+        <div class="card groom"><div class="ic">✂️</div><h3>Full haircut</h3><p>Breed-style trim by an experienced groomer.</p><span class="price">From ₹1,200</span></div>
+        <div class="card train"><div class="ic">🎓</div><h3>Puppy basics</h3><p>Sit, stay, recall and leash manners in small groups.</p><span class="price">₹3,000 for 4 sessions</span></div>
+        <div class="card board"><div class="ic">🏠</div><h3>Day care</h3><p>Supervised play and rest while you’re at work.</p><span class="price">₹600 per day</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Providers -->
+
+
+<section id="providers" style="background:#fff">
+  <div class="wrap">
+    <h2>Meet the providers</h2>
+    <p class="sub">Open “See availability” to check this week’s open slots.</p>
+    <div class="prov">
+      <div class="card">
+        <div class="who"><div class="avatar">👩‍⚕️</div><div><h3>Dr. Meera Kapoor</h3><p>Veterinarian · 4.9 rating</p></div></div>
+        <span class="tag">Check-ups</span><span class="tag">Vaccination</span>
+        <details>
+          <summary>See availability</summary>
+          <div class="slots"><span>Mon 10:00</span><span class="full">Mon 11:00</span><span>Tue 15:00</span><span>Fri 09:30</span></div>
+        </details>
+      </div>
+      <div class="card">
+        <div class="who"><div class="avatar">💇</div><div><h3>Fluff &amp; Fur Studio</h3><p>Groomer · 4.7 rating</p></div></div>
+        <span class="tag">Bath</span><span class="tag">Haircut</span>
+        <details>
+          <summary>See availability</summary>
+          <div class="slots"><span>Tue 11:00</span><span>Wed 14:00</span><span class="full">Thu 10:00</span><span>Sat 12:00</span></div>
+        </details>
+      </div>
+      <div class="card">
+        <div class="who"><div class="avatar">🦮</div><div><h3>Arjun Sethi</h3><p>Trainer · 4.8 rating</p></div></div>
+        <span class="tag">Puppy basics</span><span class="tag">Behaviour</span>
+        <details>
+          <summary>See availability</summary>
+          <div class="slots"><span>Mon 17:00</span><span>Wed 17:00</span><span>Sat 09:00</span></div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Booking -->
+
+
+<section id="book" class="book">
+  <div class="wrap">
+    <h2>Book an appointment</h2>
+    <p class="sub">Choose a service, a time and your pet. We’ll send a reminder the day before.</p>
+    <form class="box" action="#confirmed" method="get">
+      <fieldset class="pick">
+        <legend>Service</legend>
+        <input type="radio" name="service" id="s1" checked><label for="s1">🩺 Check-up</label>
+        <input type="radio" name="service" id="s2"><label for="s2">💉 Vaccination</label>
+        <input type="radio" name="service" id="s3"><label for="s3">🛁 Grooming</label>
+        <input type="radio" name="service" id="s4"><label for="s4">🎓 Training</label>
+      </fieldset>
+      <div class="row">
+        <label class="f">Your pet
+          <select name="pet"><option>Bruno (Labrador)</option><option>Milo (Persian cat)</option><option>Add a new pet…</option></select>
+        </label>
+        <label class="f">Provider
+          <select name="provider"><option>Dr. Meera Kapoor</option><option>Fluff &amp; Fur Studio</option><option>Arjun Sethi</option></select>
+        </label>
+        <label class="f">Date <input type="date" name="date"></label>
+      </div>
+      <fieldset class="pick">
+        <legend>Time</legend>
+        <input type="radio" name="time" id="h1" checked><label for="h1">10:00</label>
+        <input type="radio" name="time" id="h2"><label for="h2">11:30</label>
+        <input type="radio" name="time" id="h3"><label for="h3">15:00</label>
+        <input type="radio" name="time" id="h4"><label for="h4">17:00</label>
+      </fieldset>
+      <label class="f">Notes for the provider (optional)
+        <textarea name="notes" rows="3" placeholder="Anything we should know? Allergies, behaviour, past visits…"></textarea>
+      </label>
+      <label class="check"><input type="checkbox" name="remind" checked> Send me a reminder before the visit</label>
+      <div><button class="btn" type="submit">Confirm booking</button></div>
+    </form>
+  </div>
+</section>
+
+<!-- Confirmation popup -->
+
+
+<div class="modal" id="confirmed" role="dialog" aria-label="Booking confirmed">
+  <div>
+    <div class="big">🎉</div>
+    <h3>Booking confirmed</h3>
+    <p>Your appointment request has been sent. You’ll get a reminder before the visit.</p>
+    <a class="btn" href="#history">View my appointments</a>
+  </div>
+</div>
+
+
+
+<!-- Pets -->
+
+
+<section id="pets">
+  <div class="wrap">
+    <h2>My pets</h2>
+    <p class="sub">Keep each pet’s details in one place so every provider has what they need.</p>
+    <div class="tabs">
+      <input type="radio" name="pt" id="t1" checked>
+      <input type="radio" name="pt" id="t2">
+      <input type="radio" name="pt" id="t3">
+      <div class="tabbar">
+        <label for="t1">🐶 Bruno</label>
+        <label for="t2">🐱 Milo</label>
+        <label for="t3">＋ Add pet</label>
+      </div>
+      <div class="panel p1">
+        <div class="pet"><div class="face">🐶</div>
+          <dl><dt>Breed</dt><dd>Labrador Retriever</dd><dt>Age</dt><dd>3 years</dd><dt>Weight</dt><dd>28 kg</dd><dt>Last vaccine</dt><dd>12 Aug 2026</dd><dt>Next visit</dt><dd>Friday, 9:30 with Dr. Kapoor</dd></dl>
+        </div>
+      </div>
+      <div class="panel p2">
+        <div class="pet"><div class="face">🐱</div>
+          <dl><dt>Breed</dt><dd>Persian</dd><dt>Age</dt><dd>5 years</dd><dt>Weight</dt><dd>4.2 kg</dd><dt>Last groom</dt><dd>2 Oct 2026</dd><dt>Next visit</dt><dd>None booked</dd></dl>
+        </div>
+      </div>
+      <div class="panel p3">
+        <div class="empty"><p>Tell us about your pet to start booking.</p><br>
+          <div class="row">
+            <label class="f">Name <input type="text" placeholder="e.g. Coco"></label>
+            <label class="f">Type <select><option>Dog</option><option>Cat</option><option>Bird</option><option>Other</option></select></label>
+            <label class="f">Age <input type="text" placeholder="e.g. 2 years"></label>
+          </div><br><a class="btn" href="#pets">Save pet profile</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Reminders + History -->
+
+
+<section id="history" style="background:#fff">
+  <div class="wrap">
+    <h2>Reminders and service history</h2>
+    <p class="sub">Upcoming visits and everything your pets have had done.</p>
+    <div class="two">
+      <div>
+        <div class="remind soon"><span>⏰</span><div><b>Bruno’s check-up is on Friday</b>Dr. Kapoor · 9:30. Please skip breakfast.</div></div>
+        <div class="remind"><span>💉</span><div><b>Milo’s booster is due next month</b>Book early to get your preferred slot.</div></div>
+        <div class="remind"><span>🛁</span><div><b>Bruno’s bath is due in two weeks</b>Fluff &amp; Fur Studio has Saturday slots.</div></div>
+      </div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Date</th><th>Pet</th><th>Service</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>25 Oct</td><td>Bruno</td><td>Check-up</td><td><span class="pill wait">Upcoming</span></td></tr>
+            <tr><td>2 Oct</td><td>Milo</td><td>Full haircut</td><td><span class="pill">Completed</span></td></tr>
+            <tr><td>12 Aug</td><td>Bruno</td><td>Vaccination</td><td><span class="pill">Completed</span></td></tr>
+            <tr><td>3 Jul</td><td>Milo</td><td>Check-up</td><td><span class="pill no">Cancelled</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Dashboards -->
+
+ 
+<section id="dashboards">
+  <div class="wrap">
+    <h2>Dashboards</h2>
+    <p class="sub">A quick look at what providers and admins see.</p>
+    <div class="tabs">
+      <input type="radio" name="dt" id="d1" checked>
+      <input type="radio" name="dt" id="d2">
+      <input type="radio" name="dt" id="d3">
+      <div class="tabbar">
+        <label for="d1">Pet owner</label>
+        <label for="d2">Provider</label>
+        <label for="d3">Admin</label>
+      </div>
+
+      <div class="panel p1">
+        <div class="stats">
+          <div class="stat"><b>2</b><span>Pets</span></div>
+          <div class="stat"><b>1</b><span>Upcoming visit</span></div>
+          <div class="stat"><b>6</b><span>Past services</span></div>
+        </div>
+        <p>Book a new visit, update pet profiles, or review past services from the sections above.</p>
+      </div>
+
+      <div class="panel p2">
+        <div class="stats">
+          <div class="stat"><b>5</b><span>Today’s appointments</span></div>
+          <div class="stat"><b>3</b><span>New requests</span></div>
+          <div class="stat"><b>12</b><span>Open slots this week</span></div>
+        </div>
+        <h3>Appointment requests</h3>
+        <div class="req"><span><b>Bruno</b> · Check-up · Fri 9:30</span><span><button class="mini ok">Accept</button> <button class="mini">Decline</button></span></div>
+        <div class="req"><span><b>Luna</b> · Vaccination · Sat 11:00</span><span><button class="mini ok">Accept</button> <button class="mini">Decline</button></span></div>
+        <div class="req"><span><b>Rocky</b> · Follow-up · Mon 10:00</span><span><button class="mini ok">Accept</button> <button class="mini">Decline</button></span></div>
+      </div>
+
+      <div class="panel p3">
+        <div class="stats">
+          <div class="stat"><b>1,240</b><span>Registered owners</span></div>
+          <div class="stat"><b>86</b><span>Active providers</span></div>
+          <div class="stat"><b>4</b><span>Providers to approve</span></div>
+        </div>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Provider</th><th>Type</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Happy Tails Clinic</td><td>Veterinary</td><td><span class="pill wait">Pending</span></td></tr>
+              <tr><td>Pawfect Spa</td><td>Grooming</td><td><span class="pill wait">Pending</span></td></tr>
+              <tr><td>Dr. Meera Kapoor</td><td>Veterinary</td><td><span class="pill">Approved</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>🐾 PawBook – making pet care easier to find and book.</p>
+</footer>
+
+</body>
+</html>
